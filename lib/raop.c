@@ -45,6 +45,14 @@ struct raop_s {
     dnssd_t *dnssd;
 
     unsigned short port;
+
+    /* user-configurable plist items */
+    uint8_t maxFPS;
+    uint16_t width;
+    uint16_t height;
+    uint8_t refreshRate;
+    uint8_t overscanned;
+
 };
 
 struct raop_conn_s {
@@ -277,6 +285,14 @@ raop_init(int max_clients, raop_callbacks_t *callbacks) {
         return NULL;
     }
 
+    /* Initialize user-configurable plist items */
+    raop->maxFPS = 30;
+    raop->height = 1080;
+    raop->width = 1920;
+    raop->refreshRate = 60;
+    raop->overscanned = 1;  /* correct default is 0, but FD- has used 1 */
+
+
     /* Initialize the logger */
     raop->logger = logger_init();
     pairing = pairing_init_generate();
@@ -365,6 +381,20 @@ raop_set_dnssd(raop_t *raop, dnssd_t *dnssd) {
     raop->dnssd = dnssd;
 }
 
+void
+raop_set_plist_item(raop_t *raop, const char* plist_item, unsigned short val) {
+    if (strncmp(plist_item, "maxFPS", 6) == 0 ) {
+        raop->maxFPS = (uint8_t) (val % 256);
+    } else if (strncmp(plist_item, "width", 5) == 0) {
+        raop->width = (uint16_t) val;
+    } else if (strncmp(plist_item, "height", 6) == 0) {
+        raop->height = (uint16_t) val;      
+    } else if (strncmp(plist_item, "refreshRate", 11) == 0) {
+        raop->refreshRate = (uint8_t) (val % 256);
+    } else if (strncmp(plist_item, "overscanned", 12) == 0) {
+        raop->overscanned = (uint8_t) (val ? 1 : 0);
+    }
+}
 
 int
 raop_start(raop_t *raop, unsigned short *port) {
