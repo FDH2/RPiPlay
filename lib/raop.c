@@ -44,7 +44,12 @@ struct raop_s {
 
     dnssd_t *dnssd;
 
+    /* local network ports */
     unsigned short port;
+    unsigned short timing_lport;
+    unsigned short control_lport;
+    unsigned short data_lport;
+    unsigned short mirror_data_lport;
 };
 
 struct raop_conn_s {
@@ -304,6 +309,14 @@ raop_init(int max_clients, raop_callbacks_t *callbacks) {
     raop->pairing = pairing;
     raop->httpd = httpd;
     return raop;
+
+    /* initialize network ports (0 means choose dynamically) */
+    raop->port = 0;
+    raop->timing_lport = 0;
+    raop->control_lport = 0;
+    raop->data_lport = 0;
+    raop->mirror_data_lport = 0;
+   
 }
 
 void
@@ -338,6 +351,21 @@ void
 raop_set_port(raop_t *raop, unsigned short port) {
     assert(raop);
     raop->port = port;
+}
+
+void
+raop_set_udp_ports(raop_t *raop, unsigned short udp_ports[3]) {
+    assert(raop);
+    raop->timing_lport = udp_ports[0];
+    raop->control_lport = udp_ports[1];
+    raop->data_lport = udp_ports[2];
+}
+
+void
+raop_set_tcp_ports(raop_t *raop, unsigned short tcp_ports[2]) {
+    assert(raop);
+    raop->mirror_data_lport = tcp_ports[0];
+    raop->port = tcp_ports[1];
 }
 
 unsigned short

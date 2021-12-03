@@ -430,6 +430,9 @@ raop_rtp_mirror_thread(void *arg)
     return 0;
 }
 
+static int
+raop_rtp_init_mirror_sockets(raop_rtp_mirror_t *raop_rtp_mirror, int use_ipv6);
+
 void
 raop_rtp_start_mirror(raop_rtp_mirror_t *raop_rtp_mirror, int use_udp, unsigned short *mirror_data_lport)
 {
@@ -448,6 +451,7 @@ raop_rtp_start_mirror(raop_rtp_mirror_t *raop_rtp_mirror, int use_udp, unsigned 
         use_ipv6 = 1;
     }
     use_ipv6 = 0;
+    raop_rtp_mirror->mirror_data_lport = *mirror_data_lport;
     if (raop_rtp_init_mirror_sockets(raop_rtp_mirror, use_ipv6) < 0) {
         logger_log(raop_rtp_mirror->logger, LOGGER_ERR, "raop_rtp_mirror initializing sockets failed");
         MUTEX_UNLOCK(raop_rtp_mirror->run_mutex);
@@ -502,12 +506,10 @@ void raop_rtp_mirror_destroy(raop_rtp_mirror_t *raop_rtp_mirror) {
 static int
 raop_rtp_init_mirror_sockets(raop_rtp_mirror_t *raop_rtp_mirror, int use_ipv6)
 {
-    int dsock = -1;
-    unsigned short dport = 0;
-
     assert(raop_rtp_mirror);
 
-    dsock = netutils_init_socket(&dport, use_ipv6, 0);
+    unsigned short dport = raop_rtp_mirror->mirror_data_lport;
+    int dsock = netutils_init_socket(&dport, use_ipv6, 0);
     if (dsock == -1) {
         goto sockets_cleanup;
     }
