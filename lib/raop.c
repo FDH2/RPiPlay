@@ -400,8 +400,8 @@ raop_set_plist(raop_t *raop, const char *plist_item, const int value) {
         raop->maxFPS = (uint8_t) value;
         if ((int) raop->maxFPS != value) retval = 1;
     } else if (strcmp(plist_item,"overscanned") == 0) {
-      raop->overscanned = (uint8_t) (value ? 1 : 0);
-      if ((int) raop->overscanned  != value) retval = 1;
+        raop->overscanned = (uint8_t) (value ? 1 : 0);
+        if ((int) raop->overscanned  != value) retval = 1;
     }  else {
         retval = -1;
     }	  
