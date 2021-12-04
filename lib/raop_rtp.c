@@ -528,9 +528,9 @@ raop_rtp_start_audio(raop_rtp_t *raop_rtp, int use_udp, unsigned short control_r
 
     assert(raop_rtp);
     assert(control_lport);
-      assert(data_lport);
+    assert(data_lport);
 
-      MUTEX_LOCK(raop_rtp->run_mutex);
+    MUTEX_LOCK(raop_rtp->run_mutex);
     if (raop_rtp->running || !raop_rtp->joined) {
         MUTEX_UNLOCK(raop_rtp->run_mutex);
         return;
