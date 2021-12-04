@@ -381,19 +381,31 @@ raop_set_dnssd(raop_t *raop, dnssd_t *dnssd) {
     raop->dnssd = dnssd;
 }
 
-void
-raop_set_plist_item(raop_t *raop, const char* plist_item, unsigned short val) {
-    if (strncmp(plist_item, "maxFPS", 6) == 0 ) {
-        raop->maxFPS = (uint8_t) (val % 256);
-    } else if (strncmp(plist_item, "width", 5) == 0) {
-        raop->width = (uint16_t) val;
-    } else if (strncmp(plist_item, "height", 6) == 0) {
-        raop->height = (uint16_t) val;      
-    } else if (strncmp(plist_item, "refreshRate", 11) == 0) {
-        raop->refreshRate = (uint8_t) (val % 256);
-    } else if (strncmp(plist_item, "overscanned", 12) == 0) {
-        raop->overscanned = (uint8_t) (val ? 1 : 0);
-    }
+int
+raop_set_plist(raop_t *raop, const char *plist_item, const int value) {
+    int retval = 0;
+    assert(raop);
+    assert(plist_item);
+    
+    if (strcmp(plist_item,"width") == 0) {
+        raop->width = (uint16_t) value;
+        if ((int) raop->width != value) retval = 1;
+    } else if (strcmp(plist_item,"height") == 0) {
+        raop->height = (uint16_t) value;
+        if ((int) raop->height != value) retval = 1;
+    } else if (strcmp(plist_item,"refreshRate") == 0) {
+        raop->refreshRate = (uint8_t) value;
+        if ((int) raop->refreshRate != value) retval = 1;
+    } else if (strcmp(plist_item,"maxFPS") == 0) {
+        raop->maxFPS = (uint8_t) value;
+        if ((int) raop->maxFPS != value) retval = 1;
+    } else if (strcmp(plist_item,"overscanned") == 0) {
+      raop->overscanned = (uint8_t) (value ? 1 : 0);
+      if ((int) raop->overscanned  != value) retval = 1;
+    }  else {
+        retval = -1;
+    }	  
+    return retval;
 }
 
 int
